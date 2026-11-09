@@ -1,5 +1,5 @@
 /**
- * Offline tests for the Host half of dsh-deepseek-usage.
+ * Offline tests for the Host half of dsh-deepseek-usage-overview.
  *
  * These cover the pieces that must not regress: the loopback fence, query
  * validation, the Platform payload fold and the guarantee that the account

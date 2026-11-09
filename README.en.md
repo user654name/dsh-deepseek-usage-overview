@@ -1,6 +1,6 @@
 [简体中文](README.md) | **English**
 
-# dsh-deepseek-usage
+# dsh-deepseek-usage-overview
 
 **DeepSeek Platform usage, inside DeepSeek Harness — no browser tab, no copy-pasting balances.**
 
@@ -71,7 +71,7 @@ a first-class in-app view, using the **account you are already signed in with** 
 └────────────────────────────────────────────────────────────────────────────────────────┼┘
                                                                                          │
 ┌──────────────────────────────  DSH Host (Node)  ────────────────────────────────────────▼┐
-│  dsh-deepseek-usage host half                                                            │
+│  dsh-deepseek-usage-overview host half                                                            │
 │    • loopback-only HTTP route, GET only                                                  │
 │    • deepseekAccount.getPlatformSession()  →  stored DeepSeek account grant             │
 │    • queries the private endpoints the Platform usage page itself uses:                  │
@@ -133,7 +133,7 @@ Requirements:
 From a checkout:
 
 ```bash
-dsh plugin --profile <profile> add /absolute/path/to/dsh-deepseek-usage
+dsh plugin --profile <profile> add /absolute/path/to/dsh-deepseek-usage-overview
 ```
 
 or inside a DSH session, ask the agent to install the bundle from that directory. Then **refresh the
@@ -186,7 +186,7 @@ No configuration is required. The plugin row is mounted with an empty config:
 ```yaml
 - insert:
     - id: deepseek-usage
-      name: dsh-deepseek-usage
+      name: dsh-deepseek-usage-overview
       config: {}
 ```
 
@@ -196,7 +196,7 @@ Without an account service, or when signed out, the page shows a localized "Not 
 ## Development
 
 ```text
-dsh-deepseek-usage/
+dsh-deepseek-usage-overview/
 ├── index.js              # Host half: route, Platform fetches, aggregation, loopback fence
 ├── client.js             # Browser half: hand-written __ModuleLoader__ bundle (no build step)
 ├── cordis.patch.yml      # Bundle patch that mounts the Host half

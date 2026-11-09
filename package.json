@@ -1,5 +1,5 @@
 {
-  "name": "dsh-deepseek-usage",
+  "name": "dsh-deepseek-usage-overview",
   "version": "0.1.0",
   "description": "In-app DeepSeek Platform usage page for the DeepSeek Harness Web GUI: balance, total spend, per-key spend/token filters and a spend chart, opened from a sidebar shortcut or a double-click in the bottom-right corner.",
   "private": true,
@@ -42,11 +42,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/user654name/dsh-deepseek-usage.git"
+    "url": "git+https://github.com/user654name/dsh-deepseek-usage-overview.git"
   },
-  "homepage": "https://github.com/user654name/dsh-deepseek-usage#readme",
+  "homepage": "https://github.com/user654name/dsh-deepseek-usage-overview#readme",
   "bugs": {
-    "url": "https://github.com/user654name/dsh-deepseek-usage/issues"
+    "url": "https://github.com/user654name/dsh-deepseek-usage-overview/issues"
   },
   "packageManager": "pnpm@11.28.5",
   "devDependencies": {

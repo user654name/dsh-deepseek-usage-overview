@@ -1,5 +1,5 @@
 /**
- * dsh-deepseek-usage — browser half.
+ * dsh-deepseek-usage-overview — browser half.
  *
  * A hand-written `__ModuleLoader__` bundle (no build step). It contributes:
  *
@@ -15,13 +15,13 @@
  * credential or any raw Platform response.
  */
 window.__ModuleLoader__.load({
-  id: "dsh-deepseek-usage",
+  id: "dsh-deepseek-usage-overview",
   factory: (require) => {
     const React = require("react");
     const { jsx, jsxs } = require("react/jsx-runtime");
 
     /** Locale namespace of this plugin. */
-    const NS = "dsh-deepseek-usage";
+    const NS = "dsh-deepseek-usage-overview";
 
     /** Chinese copy (the user's primary language). */
     const zh = {
@@ -287,7 +287,7 @@ window.__ModuleLoader__.load({
 
       componentDidCatch(error) {
         try {
-          console.error("[dsh-deepseek-usage]", error);
+          console.error("[dsh-deepseek-usage-overview]", error);
         } catch {
           /* diagnostics must never mask the fallback */
         }

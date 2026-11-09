@@ -1,5 +1,5 @@
 /**
- * dsh-deepseek-usage — host half.
+ * dsh-deepseek-usage-overview — host half.
  *
  * Serves one read-only, loopback-only JSON endpoint for the in-app usage page:
  *
@@ -21,7 +21,7 @@
  * fenced to a loopback peer socket, is GET-only, and is cached briefly so the
  * page and the double-click shortcut cannot hammer Platform.
  *
- * @module dsh-deepseek-usage
+ * @module dsh-deepseek-usage-overview
  */
 
 /** Stable Cordis plugin name. */

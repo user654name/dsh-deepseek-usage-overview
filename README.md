@@ -1,6 +1,6 @@
 **简体中文** | [English](README.en.md)
 
-# dsh-deepseek-usage
+# dsh-deepseek-usage-overview
 
 **在 DeepSeek Harness 里直接查看 DeepSeek 平台用量 —— 不再跳浏览器、不再手动对账。**
 
@@ -68,7 +68,7 @@
 └────────────────────────────────────────────────────────────────────────────────────┼────┘
                                                                                      │
 ┌──────────────────────────────  DSH Host（Node）  ─────────────────────────────────▼────┐
-│  dsh-deepseek-usage 宿主半区                                                           │
+│  dsh-deepseek-usage-overview 宿主半区                                                           │
 │    • 仅本机回环、仅 GET 的 HTTP 路由                                                   │
 │    • deepseekAccount.getPlatformSession() 取得已登录账号凭据                           │
 │    • 请求平台用量页自己使用的私有接口：                                                │
@@ -105,7 +105,7 @@ GET /api/deepseek-usage/overview?start=<unix 秒>&end=<unix 秒>&tz=<东偏移�
 从本地目录安装：
 
 ```bash
-dsh plugin --profile <profile> add /绝对路径/dsh-deepseek-usage
+dsh plugin --profile <profile> add /绝对路径/dsh-deepseek-usage-overview
 ```
 
 或在 DSH 会话里让 Agent 安装该目录对应的 bundle。安装后**刷新一次 Web 页面**（`Ctrl+F5`）。
@@ -151,7 +151,7 @@ dsh plugin --profile <profile> add /绝对路径/dsh-deepseek-usage
 ```yaml
 - insert:
     - id: deepseek-usage
-      name: dsh-deepseek-usage
+      name: dsh-deepseek-usage-overview
       config: {}
 ```
 
@@ -161,7 +161,7 @@ dsh plugin --profile <profile> add /绝对路径/dsh-deepseek-usage
 ## 开发
 
 ```text
-dsh-deepseek-usage/
+dsh-deepseek-usage-overview/
 ├── index.js              # 宿主半区：路由、平台请求、聚合、回环校验
 ├── client.js             # 浏览器半区：手写 __ModuleLoader__ bundle（无构建）
 ├── cordis.patch.yml      # 挂载宿主半区的 bundle patch

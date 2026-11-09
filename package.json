@@ -1,0 +1,68 @@
+{
+  "name": "dsh-deepseek-usage",
+  "version": "0.1.0",
+  "description": "In-app DeepSeek Platform usage page for the DeepSeek Harness Web GUI: balance, total spend, per-key spend/token filters and a spend chart, opened from a sidebar shortcut or a double-click in the bottom-right corner.",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "check": "node --check index.js && node --check client.js && node --check test/aggregate.test.mjs && node --check test/client.render.test.mjs",
+    "test": "node --test test/*.mjs"
+  },
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "usage",
+    "token-usage",
+    "balance",
+    "dashboard"
+  ],
+  "author": "ZhjavangTianQi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/user654name/dsh-deepseek-usage.git"
+  },
+  "homepage": "https://github.com/user654name/dsh-deepseek-usage#readme",
+  "bugs": {
+    "url": "https://github.com/user654name/dsh-deepseek-usage/issues"
+  },
+  "packageManager": "pnpm@11.28.5",
+  "devDependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  }
+}

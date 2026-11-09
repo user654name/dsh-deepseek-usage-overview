@@ -1,0 +1,9 @@
+# dsh-deepseek-usage — bundle patch.
+# When this package is listed in a profile's dsh.profile.bundles, the loader
+# applies this patch and mounts the Host half. The Host half registers one
+# loopback-only HTTP route; the browser half is discovered from the package's
+# `dsh.client` section and loaded by the Web GUI.
+- insert:
+    - id: deepseek-usage
+      name: dsh-deepseek-usage
+      config: {}

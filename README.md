@@ -1,11 +1,12 @@
+**简体中文** | [English](README.en.md)
+
 # dsh-deepseek-usage
 
-**DeepSeek Platform usage, inside DeepSeek Harness — no browser tab, no copy-pasting balances.**
+**在 DeepSeek Harness 里直接查看 DeepSeek 平台用量 —— 不再跳浏览器、不再手动对账。**
 
-An in-app usage page for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web GUI
-(`dsh web`). It renders the same information as `platform.deepseek.com/usage` — recharge balance,
-total spend, spend / API-request / token totals, and an hourly spend chart — directly inside the
-Harness UI, opened from a sidebar shortcut or by double-clicking the bottom-right corner.
+这是一个面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web GUI 的**内页用量面板**：
+在 Harness 内部展示与 `platform.deepseek.com/usage` 相同的信息 —— 充值余额、累计消费、
+消费金额 / API 请求次数 / Tokens、以及消费柱状图。侧边栏「用量」按钮或双击右下角即可打开。
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Platform: DeepSeek Harness Web](https://img.shields.io/badge/platform-DeepSeek%20Harness%20Web-4D6BFE)
@@ -13,173 +14,139 @@ Harness UI, opened from a sidebar shortcut or by double-clicking the bottom-righ
 
 ---
 
-## Table of contents
+## 目录
 
-- [Why](#why)
-- [Features](#features)
-- [How it works](#how-it-works)
-- [Install](#install)
-- [Usage](#usage)
-- [Security and privacy](#security-and-privacy)
-- [Configuration](#configuration)
-- [Development](#development)
-- [Testing](#testing)
-- [Troubleshooting](#troubleshooting)
-- [Known limitations](#known-limitations)
-- [License](#license)
+- [为什么需要它](#为什么需要它)
+- [功能](#功能)
+- [工作原理](#工作原理)
+- [安装](#安装)
+- [使用](#使用)
+- [安全与隐私](#安全与隐私)
+- [配置](#配置)
+- [开发](#开发)
+- [测试](#测试)
+- [常见问题](#常见问题)
+- [已知限制](#已知限制)
+- [许可证](#许可证)
 
-## Why
+## 为什么需要它
 
-Checking DeepSeek credit normally means leaving the Harness, opening the Platform dashboard,
-logging in again, and navigating to the usage page. This plugin brings that page into the Harness as
-a first-class in-app view, using the **account you are already signed in with** inside DSH:
+平时查看 DeepSeek 余额和用量，需要离开 Harness、打开平台网页、重新登录、再点到用量页。
+本插件用 **DSH 里已经登录的 DeepSeek 账号**，把平台用量页直接搬进 Harness：
 
-- no second sign-in and no API key configuration;
-- no new browser tab;
-- the same numbers DeepSeek bills you for, not a locally estimated approximation.
+- 不用二次登录，不用配置 API Key；
+- 不新开浏览器标签页；
+- 展示的是 DeepSeek 实际计费口径的数据，而不是本地估算。
 
-## Features
+## 功能
 
-- **Three ways to open it**
-  - a **「用量」 shortcut** in the sidebar footer, next to Settings;
-  - a **「用量」 button in the Settings header**, next to Close;
-  - **double-click the bottom-right corner** (including the floating whale widget body, if you use it).
-- **In-app page, not an iframe and not a new tab** — a React view mounted in the Harness overlay layer,
-  styled with Harness theme tokens, so it follows light/dark themes and the active locale.
-- **Balance card** — recharge balance, bonus credit when present, the Platform low-balance alert state,
-  and a one-click **Top up** link.
-- **Total spend card** — lifetime Platform spend in your account currency.
-- **Period filters** — Today / Yesterday / Last 7 days / Last 30 days / This month.
-- **API key filter** — restrict every number and the chart to one key.
-- **Summary cards** — spend, API requests, tokens for the selected period and key.
-- **Spend chart** — hourly bars for Today, daily bars for longer ranges; toggle between
-  **call type** (model calls vs. tool calls) and **per API key** stacking.
-- **CSV export** of the currently visible buckets.
-- **Bilingual** — Simplified Chinese and English, following the Harness locale.
-- **No build step** — the browser half is a hand-written `window.__ModuleLoader__` bundle.
+- **三种打开方式**
+  - 侧边栏底部「用量」快捷按钮（设置按钮旁）；
+  - 设置页标题栏「用量」按钮（关闭按钮旁）；
+  - **双击窗口右下角**（如果装了右下角小鲸鱼挂件，双击鲸鱼身体同样生效）。
+- **真正的 DSH 内页**：注册在 `shell.overlay` 的 React 视图，使用 Harness 主题 token，
+  自动跟随明暗主题与语言，不是 iframe、也不是新标签页。
+- **余额卡片**：充值余额、赠送余额（有则显示）、平台余额预警状态、「去充值」入口。
+- **累计消费卡片**：账户币种的平台累计消费。
+- **时间维度**：今天 / 昨天 / 近 7 天 / 近 30 天 / 本月。
+- **API Key 筛选**：所有数字与图表可只看某一个 Key。
+- **汇总卡片**：所选时间与 Key 的消费金额、API 请求次数、Tokens。
+- **消费柱状图**：今天按小时、更长区间按天；可在「调用类型（模型调用 / 工具调用）」与
+  「按 API Key」两种分组间切换。
+- **CSV 导出**：导出当前筛选下的明细。
+- **中英双语**：跟随 Harness 当前语言。
+- **无需构建**：浏览器半区是手写的 `window.__ModuleLoader__` bundle。
 
-## How it works
+## 工作原理
 
 ```
-┌───────────────────────────────  Browser (Harness Web UI)  ───────────────────────────────┐
-│  sidebar shortcut / settings button / bottom-right double-click                         │
+┌───────────────────────────────  浏览器（Harness Web UI）  ───────────────────────────────┐
+│  侧边栏按钮 / 设置页按钮 / 右下角双击                                                   │
 │        │                                                                                │
 │        ▼                                                                                │
-│  in-app usage page (React, shell.overlay)  ──  fetch GET /api/deepseek-usage/overview ──┐│
-└────────────────────────────────────────────────────────────────────────────────────────┼┘
-                                                                                         │
-┌──────────────────────────────  DSH Host (Node)  ────────────────────────────────────────▼┐
-│  dsh-deepseek-usage host half                                                            │
-│    • loopback-only HTTP route, GET only                                                  │
-│    • deepseekAccount.getPlatformSession()  →  stored DeepSeek account grant             │
-│    • queries the private endpoints the Platform usage page itself uses:                  │
-│        GET /api/v0/users/get_user_summary                                                │
-│        GET /auth-api/v0/users/current                                                    │
-│        GET /api/v0/usage/by_api_key/amount                                               │
-│        GET /api/v0/usage/by_api_key/cost                                                 │
-│    • folds amount + cost payloads into hourly/daily buckets and aggregates them          │
-│    • caches the aggregated result for 30 s                                               │
-└───────────────────────────────────────────────────────────────────────────────────────────┘
-                                                                                         │
-                                                          platform.deepseek.com  ◄────────┘
+│  内页用量面板（React，shell.overlay）  ──  fetch GET /api/deepseek-usage/overview ──┐    │
+└────────────────────────────────────────────────────────────────────────────────────┼────┘
+                                                                                     │
+┌──────────────────────────────  DSH Host（Node）  ─────────────────────────────────▼────┐
+│  dsh-deepseek-usage 宿主半区                                                           │
+│    • 仅本机回环、仅 GET 的 HTTP 路由                                                   │
+│    • deepseekAccount.getPlatformSession() 取得已登录账号凭据                           │
+│    • 请求平台用量页自己使用的私有接口：                                                │
+│        GET /api/v0/users/get_user_summary                                             │
+│        GET /auth-api/v0/users/current                                                 │
+│        GET /api/v0/usage/by_api_key/amount                                            │
+│        GET /api/v0/usage/by_api_key/cost                                              │
+│    • 把 amount + cost 折叠成小时/天桶并聚合                                             │
+│    • 结果在内存中缓存 30 秒                                                             │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+                                                                                     │
+                                                       platform.deepseek.com  ◄──────┘
 ```
 
-The browser never receives the account token, deployment cookies, or raw Platform payloads — only
-aggregated numbers and API key names. See [Security and privacy](#security-and-privacy).
+浏览器拿到的只有聚合后的数字和 API Key 名称，**不会**收到账号 token、部署 Cookie 或平台原始响应。
 
-### Request / response
+### 接口
 
 ```
-GET /api/deepseek-usage/overview?start=<unix seconds>&end=<unix seconds>&tz=<seconds east>&lang=zh|en[&refresh=1]
+GET /api/deepseek-usage/overview?start=<unix 秒>&end=<unix 秒>&tz=<东偏移秒数>&lang=zh|en[&refresh=1]
 ```
 
-```jsonc
-{
-  "ok": true,
-  "origin": "https://platform.deepseek.com",
-  "updatedAt": 1794190000000,
-  "range": { "start": 1794153600, "end": 1794240000, "tz": 28800, "bucket": 3600 },
-  "account": {
-    "currency": "CNY",
-    "balance": "11.79",
-    "bonus": "0",
-    "totalCosts": [{ "currency": "CNY", "amount": "266.87" }],
-    "balanceAlert": { "enabled": true, "alertBound": "5" }
-  },
-  "usage": {
-    "currency": "CNY",
-    "bucket": 3600,
-    "totals": { "cost": 2.03, "tokens": 22940748, "requests": 109, "...": "..." },
-    "keys": [{ "id": "...", "name": "DeepSeek Harness", "cost": 2.03, "tokens": 22940748, "requests": 109 }],
-    "buckets": [{ "time": 1794186000, "cost": 0.42, "tokens": 6839836, "requests": 11, "keys": { "...": {} } }]
-  }
-}
-```
+路由只接受 **loopback 对端**（127.0.0.1 / ::1），只允许 `GET`，并做 30 秒内存缓存
+（`refresh=1` 绕过）。非本机请求返回 403，非 GET 返回 405。
 
-The route is registered as an exact `webServer` route and guarded by a **peer-socket loopback fence**
-(IPv4 / IPv6 loopback only, `Host` header checked as an additional defense), `GET`-only, with a
-30-second in-memory cache (`refresh=1` bypasses it).
+## 安装
 
-## Install
+前置条件：
 
-Requirements:
+- DeepSeek Harness 的 Web GUI（`@deepseek-ai/dsh >= 0.2.2`），Node.js 20+；
+- 已在 DSH「设置 → 账号与余额」登录 DeepSeek 账号。本插件读取的是**平台账号凭据**，
+  仅配置推理用 `DEEPSEEK_API_KEY` 不够。
 
-- DeepSeek Harness with the Web GUI (`@deepseek-ai/dsh >= 0.2.2`), Node.js 20+;
-- a **signed-in DeepSeek account** in DSH (Settings → Account & balance). The plugin reads the
-  Platform account grant; an inference `DEEPSEEK_API_KEY` alone is not enough.
-
-From a checkout:
+从本地目录安装：
 
 ```bash
-dsh plugin --profile <profile> add /absolute/path/to/dsh-deepseek-usage
+dsh plugin --profile <profile> add /绝对路径/dsh-deepseek-usage
 ```
 
-or inside a DSH session, ask the agent to install the bundle from that directory. Then **refresh the
-Web UI once** (`Ctrl+F5`) so the browser loads the client bundle.
+或在 DSH 会话里让 Agent 安装该目录对应的 bundle。安装后**刷新一次 Web 页面**（`Ctrl+F5`）。
 
-Typical profiles: `desktop` for the desktop app, `web` for `dsh web`.
+常见 profile：桌面端用 `desktop`，`dsh web` 用 `web`。
 
-> The plugin installs as a DSH **bundle**: `cordis.patch.yml` mounts the Host half and
-> `package.json` declares the browser half (`dsh.client`), so there is nothing else to configure.
+> 插件以 **bundle** 形式安装：`cordis.patch.yml` 挂载宿主半区，`package.json` 的 `dsh.client`
+> 声明浏览器半区，除此之外无需额外配置。
 
-## Usage
+## 使用
 
-| Entry point | Where |
+| 入口 | 位置 |
 | --- | --- |
-| 「用量」 sidebar shortcut | sidebar footer, beside Settings (icon-only when the sidebar is collapsed) |
-| 「用量」 Settings button | Settings panel header, beside Close |
-| Bottom-right double-click | anywhere in the bottom-right 200 px corner, including the floating whale widget body; buttons and inputs keep their normal behavior |
+| 「用量」侧边栏按钮 | 侧边栏页脚、设置按钮旁（侧边栏收起时只显示图标） |
+| 「用量」设置页按钮 | 设置面板标题栏、关闭按钮旁 |
+| 右下角双击 | 窗口右下角 200 px 区域内双击；小鲸鱼挂件身体上的双击同样生效，按钮 / 输入框等控件保持原行为 |
 
-The page shows:
+页面内容：
 
-| Section | Content |
+| 区块 | 内容 |
 | --- | --- |
-| Balance | recharge balance, bonus credit, low-balance alert state, Top up |
-| Total spend | lifetime spend for the account currency |
-| Filters | period, API key, clear filters, CSV export |
-| Summary | spend, API requests, tokens |
-| Chart | spend bars, grouped by call type or API key |
+| 余额 | 充值余额、赠送余额、余额预警状态、去充值 |
+| 累计消费 | 账户币种的累计消费金额 |
+| 筛选 | 时间维度、API Key、清除筛选、CSV 导出 |
+| 汇总 | 消费金额、API 请求次数、Tokens |
+| 图表 | 消费柱状图，按调用类型或 API Key 分组 |
 
-## Security and privacy
+## 安全与隐私
 
-- **Credentials never reach the browser.** The Host resolves the account grant through
-  `deepseekAccount.getPlatformSession()` and keeps it server-side. The HTTP response contains only
-  aggregates and API key display names.
-- **Loopback only.** The route rejects non-loopback peer sockets (403), non-`GET` methods (405), and
-  requests with a non-loopback `Host` header.
-- **Fixed upstream origin.** Requests go only to the origin provided by the account service
-  (normally `https://platform.deepseek.com`), always HTTPS, with `redirect: "error"`, a 15-second
-  timeout, and a 4 MiB response cap.
-- **No disk writes.** The plugin persists no credentials or usage data; the only state is a 30 s
-  in-memory cache.
-- **CSRF-safe by construction.** The endpoint is read-only, same-origin, and sets no CORS headers, so a
-  foreign page cannot read the response.
-- The private Platform endpoints are the same ones the official Platform usage page calls. They are
-  undocumented and may change without notice.
+- **凭据不进浏览器**：账号 grant 只在 Host 侧使用；HTTP 响应只有聚合数字与 Key 显示名。
+- **仅本机回环**：按 peer socket 地址判断（`127.0.0.1` / `::1`），`Host` 头作为附加防线。
+- **固定上游**：只请求账号服务提供的 origin（通常 `https://platform.deepseek.com`），强制
+  HTTPS、禁止重定向、15 秒超时、4 MiB 响应上限。
+- **不落盘**：不持久化任何凭据或用量数据，只有 30 秒内存缓存。
+- **无 CORS 头**：只读、同源，外部页面无法读取响应。
 
-## Configuration
+平台这些私有接口与官方用量页同源同鉴权，未公开、可能变更。
 
-No configuration is required. The plugin row is mounted with an empty config:
+## 配置
+
+不需要配置。插件行以空配置挂载：
 
 ```yaml
 - insert:
@@ -188,83 +155,70 @@ No configuration is required. The plugin row is mounted with an empty config:
       config: {}
 ```
 
-The Host half only requires the Harness `webServer` service and optionally reads `deepseekAccount`.
-Without an account service, or when signed out, the page shows a localized "Not signed in" state.
+宿主半区只依赖 Harness 的 `webServer` 服务，并可选读取 `deepseekAccount`。未登录或没有账号服务时，
+页面会显示本地化的「未登录」状态。
 
-## Development
+## 开发
 
 ```text
 dsh-deepseek-usage/
-├── index.js              # Host half: route, Platform fetches, aggregation, loopback fence
-├── client.js             # Browser half: hand-written __ModuleLoader__ bundle (no build step)
-├── cordis.patch.yml      # Bundle patch that mounts the Host half
-├── package.json          # Manifest (bundle + dsh.client)
-├── locale/{zh,en}.json   # Display metadata for the plugin manager
-├── icon.svg              # Plugin icon
-├── test/                 # Offline tests (host aggregation + client render)
-└── README.md / README.zh-CN.md
+├── index.js              # 宿主半区：路由、平台请求、聚合、回环校验
+├── client.js             # 浏览器半区：手写 __ModuleLoader__ bundle（无构建）
+├── cordis.patch.yml      # 挂载宿主半区的 bundle patch
+├── package.json          # 清单（bundle + dsh.client）
+├── locale/{zh,en}.json   # 插件管理页展示元数据
+├── icon.svg              # 插件图标
+├── test/                 # 离线测试（宿主聚合 + 客户端渲染）
+└── README.md（中文）/ README.en.md（English）
 ```
 
 ```bash
-pnpm install     # dev dependencies only (React for the client render test)
+pnpm install     # 仅开发依赖（客户端渲染测试需要 React）
 pnpm run check   # node --check index.js client.js
-pnpm test        # offline tests (node:test)
+pnpm test        # 离线测试（node:test）
 ```
 
-The Host half must run in Node.js (the DSH Host); the browser half runs in the Harness page. The
-client bundle is intentionally dependency-free apart from `react` and `react/jsx-runtime`, which the
-Harness page provides.
+### 样式约定
 
-### Style rules
+- UI 文案全部走 Harness locale 服务（`ctx.locale`）。
+- 颜色与表面使用 Harness 主题 token（`--dsw-alias-*`），图表柱色使用插件自有颜色。
+- 页面注册在 `shell.overlay`，侧边栏快捷入口注册在 `sidebar.footer.action`，设置页入口注册在
+  `settings.action`。
+- 不把任何 Harness Client 包作为模块引入。
 
-- UI text goes through the Harness locale service (`ctx.locale`).
-- Colors and surfaces use Harness theme tokens (`--dsw-alias-*`); chart bars use their own accent
-  colors.
-- The page is registered in `shell.overlay`, the sidebar shortcut in `sidebar.footer.action`, and the
-  Settings shortcut in `settings.action`.
-- No Harness Client package is imported as a module.
+## 测试
 
-## Testing
+`pnpm test` 使用 `node:test` 运行离线测试：
 
-`pnpm test` runs offline tests with `node:test`:
+- **宿主半区**：回环校验、参数校验、amount/cost 聚合、币种与余额选择、token 不进入浏览器响应。
+- **客户端半区**：用 React 18（`react-dom/server`）真实渲染空状态、有数据、Key 过滤、切换区间，
+  并断言所有 JSX 调用都传了 props 对象（曾导致开发版 jsx-runtime 崩溃的回归点）。
 
-- **Host** — loopback fence, query validation, amount/cost aggregation, currency and balance
-  selection, and a guarantee that the account token never appears in the browser payload.
-- **Client** — renders the real client bundle with React 18 (`react-dom/server`) in empty, loaded,
-  filtered and range-switched states, and asserts that every JSX call passes a props object (the
-  regression that once crashed the page in the development jsx-runtime).
+CI 在每次 push 时运行同样的命令（GitHub Actions）。
 
-CI runs the same commands on every push via GitHub Actions.
+## 常见问题
 
-## Troubleshooting
-
-| Symptom | Fix |
+| 现象 | 处理 |
 | --- | --- |
-| Button does not open the page | Hard-refresh the Web UI once (`Ctrl+F5`). The browser keeps client bundles until reload. |
-| Page shows "Not signed in to DeepSeek" | Sign in via Settings → Account & balance, then reopen the page. |
-| Usage detail is empty but balance works | The Platform usage endpoints returned no data for the selected period, or the account has no API usage yet. |
-| "Usage details are temporarily unavailable" banner | One of the private endpoints failed; balance and total spend are still shown. Retry with the refresh button. |
-| Numbers differ from the Platform page | The response may lag by up to 5 minutes (Platform note), and the page caches for 30 s. Use the refresh button. |
-| Render failure | The page shows an error panel with the message and a **Copy details** button; report it in the issue tracker with that text. |
+| 点按钮没反应 / 不弹窗 | 强制刷新一次 Web 页面（`Ctrl+F5`），浏览器会缓存客户端 bundle。 |
+| 显示「未登录 DeepSeek 账号」 | 到「设置 → 账号与余额」登录后重新打开。 |
+| 余额正常但用量为空 | 所选区间平台没有用量数据，或账号还没有 API 调用。 |
+| 顶部出现「用量明细暂时不可用」 | 某个私有接口失败；余额与累计消费仍会显示，可点刷新重试。 |
+| 数字和平台页对不上 | 平台数据最多延迟 5 分钟，页面再缓存 30 秒；点刷新。 |
+| 页面渲染失败 | 页面会显示错误面板和「复制错误详情」按钮，把内容贴到 issue 即可。 |
 
-## Known limitations
+## 已知限制
 
-- Requires the official DeepSeek **account** login (not API-key-only setups).
-- Only the `CNY` / `USD` wallets the Platform exposes are shown; multi-currency accounts pick the
-  account currency and fall back to the first currency with spend.
-- The private Platform usage endpoints are undocumented; a change on the Platform side can break the
-  page until the plugin is updated. The page degrades to balance + total spend instead of failing
-  completely.
-- The bottom-right double-click zone is intentionally generous (200 px) so it covers the floating
-  whale widget body; interactive controls inside that corner are ignored unless you double-click the
-  exact 44 px corner.
-- The client bundle requires a page refresh after an update (DSH does not hot-reload installed client
-  plugins in the Electron app).
+- 需要 DeepSeek **账号登录**（仅 API Key 的场景不支持）。
+- 只展示平台暴露的 CNY / USD 钱包；多币种账户取账户币种，缺失时退到第一个有用量的币种。
+- 平台私有用量接口未公开，平台侧变更可能导致页面失效；届时页面会降级为余额 + 累计消费，而不是整页崩溃。
+- 右下角双击热区故意放宽到 200 px（覆盖小鲸鱼挂件），角内可交互控件不会被误触发（精确 44 px 角除外）。
+- 更新客户端 bundle 后需要刷新页面（Electron 端不会热更新已安装插件的客户端代码）。
 
-## License
+## 许可证
 
 [MIT](LICENSE)
 
 ---
 
-Made for the DeepSeek Harness community. Issues and pull requests are welcome.
+为 DeepSeek Harness 社区而做。欢迎 issue 与 PR。

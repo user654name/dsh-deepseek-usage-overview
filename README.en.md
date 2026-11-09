@@ -40,6 +40,10 @@ a first-class in-app view, using the **account you are already signed in with** 
 - no new browser tab;
 - the same numbers DeepSeek bills you for, not a locally estimated approximation.
 
+> Unlike most similar plugins, this one does not ask you to copy a Platform `userToken`, and it does
+> not estimate costs from local session logs: it reads the Platform billing endpoints through the
+> account DSH is already signed in with, so the balance and usage match what DeepSeek actually bills.
+
 ## Features
 
 - **Three ways to open it**
@@ -129,6 +133,12 @@ Requirements:
 - DeepSeek Harness with the Web GUI (`@deepseek-ai/dsh >= 0.2.2`), Node.js 20+;
 - a **signed-in DeepSeek account** in DSH (Settings → Account & balance). The plugin reads the
   Platform account grant; an inference `DEEPSEEK_API_KEY` alone is not enough.
+
+From GitHub (recommended):
+
+```bash
+dsh plugin --profile <profile> add github:user654name/dsh-deepseek-usage-overview
+```
 
 From a checkout:
 

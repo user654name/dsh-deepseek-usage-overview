@@ -38,6 +38,9 @@
 - 不新开浏览器标签页；
 - 展示的是 DeepSeek 实际计费口径的数据，而不是本地估算。
 
+> 与常见的同类插件不同：本插件不要求复制 Platform `userToken`，也不从本地会话日志估算费用，
+> 而是通过 DSH 已登录账号直接读取 DeepSeek 平台计费接口，因此展示的是平台真实余额与账单口径的用量。
+
 ## 功能
 
 - **三种打开方式**
@@ -101,6 +104,12 @@ GET /api/deepseek-usage/overview?start=<unix 秒>&end=<unix 秒>&tz=<东偏移�
 - DeepSeek Harness 的 Web GUI（`@deepseek-ai/dsh >= 0.2.2`），Node.js 20+；
 - 已在 DSH「设置 → 账号与余额」登录 DeepSeek 账号。本插件读取的是**平台账号凭据**，
   仅配置推理用 `DEEPSEEK_API_KEY` 不够。
+
+从 GitHub 安装（推荐）：
+
+```bash
+dsh plugin --profile <profile> add github:user654name/dsh-deepseek-usage-overview
+```
 
 从本地目录安装：
 
